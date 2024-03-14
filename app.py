@@ -5,7 +5,6 @@ import bcrypt
 app = Flask(__name__)
 app.secret_key = "secrete-key"
 
-# Configuração do banco de dados SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db?check_same_thread=False'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Evita avisos deprecados
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"pool_pre_ping": True}
@@ -41,13 +40,13 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        # Verificar se o nome de usuário já está em uso
+
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             return render_template("register.html", error="Nome de usuário já em uso")
-        # Criptografar a senha antes de armazená-la no banco de dados
+
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        # Criar um novo usuário com a senha criptografada
+
         new_user = User(username=username, password=hashed_password.decode('utf-8'))
         db.session.add(new_user)
         db.session.commit()
